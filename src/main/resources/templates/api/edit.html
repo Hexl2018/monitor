@@ -2,11 +2,8 @@
 <@p.html>
 <div id="vueApp" v-cloak>
     <el-container>
-        <el-header>
-            <#include "../header.html"/>
-        </el-header>
         <el-main>
-            <el-container style="height:calc(100vh - 100px);">
+            <el-container class="base_container">
                 <el-header>
                     <el-row>
                         <el-button-group style="float:right;">
@@ -20,8 +17,8 @@
                 </el-header>
                 <el-main>
                     <el-row v-loading="submitFlag">
-                        <div style="height: calc(100vh - 200px);">
-                            <el-scrollbar style="height: 100%">
+                        <div style="height: calc(100vh - 140px);">
+                            <el-scrollbar style="height: 100%;">
                                 <el-col :span="23">
                                     <el-form ref="form" :model="form" :rules="rules" label-position="top">
                                         <el-form-item label="接口名称：" prop="name">
@@ -102,27 +99,6 @@
                         </div>
                     </el-row>
                 </el-main>
-                <!-- 弹框详情 -->
-                <el-dialog title="返回详情" :visible.sync="dialogTableVisible" top="5vh">
-                    <!-- json展示插件-->
-                    <el-row>
-                        <el-button-group style="float: right">
-                            <el-button type="primary" @click="toggleJSon1"
-                                       :icon="(countLevel1)%2===0?'el-icon-arrow-down':'el-icon-arrow-up'">
-                                {{(countLevel1)%2===0?'展开':'收起'}}第一层
-                            </el-button>
-                            <el-button type="primary" @click="toggleJSon2"
-                                       :icon="(countLevel2)%2===0?'el-icon-arrow-down':'el-icon-arrow-up'">
-                                {{(countLevel2)%2===0?'展开':'收起'}}第二层
-                            </el-button>
-                        </el-button-group>
-                    </el-row>
-                    <el-row style="height: calc(100vh - 300px);">
-                        <el-scrollbar style="height: 100%">
-                            <div id="json" v-loading="jsonLoading"></div>
-                        </el-scrollbar>
-                    </el-row>
-                </el-dialog>
             </el-container>
         </el-main>
     </el-container>
@@ -151,14 +127,7 @@
         el: '#vueApp',
         data() {
             return {
-                tableHeight: 500,
-                activeIndex: "1",
                 submitFlag: false,
-                dialogTableVisible: false,
-                jsonLoading: false,
-                returnData: '',
-                countLevel1: 1,
-                countLevel2: 1,
                 form: {
                     id: '${id!}'
                 },
@@ -207,9 +176,6 @@
             addParams() {
                 this.params.push({key: "", value: ""});
             },
-            handleSelect(index) {
-                handleMenu(this.activeIndex, index);
-            },
             handleRequestType(val) {
                 if (val === 'get') {
                     this.form.contentType = '';
@@ -245,14 +211,6 @@
                     this.headers = JSON.parse(this.form.headers);
                 }
             },
-            toggleJSon1() {
-                this.countLevel1++;
-                $('#json').JSONView('toggle', 1);
-            },
-            toggleJSon2() {
-                this.countLevel2++;
-                $('#json').JSONView('toggle', 2);
-            },
             testApi() {
                 this.$refs["form"].validate((valid) => {
                     if (valid) {
@@ -261,16 +219,7 @@
                         $.post("${ctx}/api_manage/test_api", this.form, function (dataResult) {
                             vm.submitFlag = false;
                             if (dataResult.errCode === 0) {
-                                let dom = JSON.parse(dataResult.data);
-                                vm.returnData = dom === "" ? dataResult.data : dom;
-                                vm.dialogTableVisible = true;
-                                setTimeout(() => {
-                                    vm.jsonLoading = true;
-                                    $("#json").JSONView(vm.returnData);
-                                    vm.$nextTick(() => {
-                                        vm.jsonLoading = false;
-                                    })
-                                }, 100);
+                                parent.vm.showJsonView(dataResult.data);
                             } else {
                                 vm.$message.error(dataResult.errMsg);
                             }

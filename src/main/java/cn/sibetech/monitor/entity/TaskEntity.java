@@ -39,10 +39,16 @@ public class TaskEntity implements Serializable {
     private String apiId;
 
     /**
-     * 请求方式
+     * 任务类
+     */
+    @TableField("job_class")
+    private String jobClass;
+
+    /**
+     * 任务类型
      */
     @TableField(exist = false)
-    private String requestType;
+    private Integer taskType;
 
     /**
      * raw
@@ -114,12 +120,12 @@ public class TaskEntity implements Serializable {
         this.apiId = apiId;
     }
 
-    public String getRequestType() {
-        return requestType;
+    public Integer getTaskType() {
+        return taskType;
     }
 
-    public void setRequestType(String requestType) {
-        this.requestType = requestType;
+    public void setTaskType(Integer taskType) {
+        this.taskType = taskType;
     }
 
     public String getRaw() {
@@ -160,5 +166,13 @@ public class TaskEntity implements Serializable {
 
     public void setHeaders(String headers) {
         this.headers = headers;
+    }
+
+    public String getJobClass() {
+        return jobClass;
+    }
+
+    public void setJobClass(String jobClass) {
+        this.jobClass = jobClass;
     }
 }

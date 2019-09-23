@@ -86,7 +86,11 @@ public class ApiEntityServiceImpl extends ServiceImpl<ApiEntityMapper, ApiEntity
         apiEntity.setStatus(status);
         baseMapper.updateById(apiEntity);
         // 根据status添加或新增定时任务
-
+        if (CodeConstant.API_MONITOR_OPEN_STATUS.equals(status)) {
+            scheduledTaskService.addScheduledTask(apiEntity);
+        }else if (CodeConstant.API_MONITOR_CLOSE_STATUS.equals(status)) {
+            scheduledTaskService.stopScheduledTask(apiEntity);
+        }
     }
 
     private void validateApi(ApiEntity apiEntity) {

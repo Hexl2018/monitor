@@ -29,6 +29,11 @@ public class ApiManageController extends BaseController{
         return BASE_PATH +"index";
     }
 
+    @RequestMapping("/header")
+    public String header() {
+        return BASE_PATH+"header";
+    }
+
     @RequestMapping("/to_add")
     public String add() {
         return BASE_PATH +"add";

@@ -27,7 +27,7 @@ public class ApplicationStartRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        List<TaskEntity> tasks = baseService.findList();
-        scheduleConfig.initTask(tasks);
+        /*List<TaskEntity> tasks = baseService.findList();
+        scheduleConfig.initTask(tasks);*/
     }
 }

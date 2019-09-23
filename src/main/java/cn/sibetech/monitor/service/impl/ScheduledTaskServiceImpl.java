@@ -26,6 +26,7 @@ public class ScheduledTaskServiceImpl extends ServiceImpl<ScheduledTaskMapper, T
 
     @Override
     public void addScheduledTask(ApiEntity apiEntity) {
+        TaskEntity taskEntity = new TaskEntity();
 
     }
 

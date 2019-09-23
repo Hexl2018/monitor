@@ -19,8 +19,10 @@
         display: none;
     }
     body {
-        width: 1100px;
         margin: 0 auto;
+    }
+    .base_container {
+        height:calc(100vh - 40px);
     }
     ::-webkit-scrollbar {width: 5px;height: 10px;}
     ::-webkit-scrollbar-thumb {background-color: #DDDEE0;border-radius: 3px;}
@@ -34,17 +36,6 @@
             url = url + "?_tsp_=" + timestamp;
         }
         return url;
-    }
-    function handleMenu(currentIndex,index) {
-        if (currentIndex===index) {
-            return;
-        }
-        console.log(index);
-        if (index==="1") {
-            window.location.href=addNoCache("${ctx!}/api_manage/index");
-        }else if (index==="2") {
-            window.location.href=addNoCache("${ctx!}/data_statistics/index");
-        }
     }
 </script>
 <body>
