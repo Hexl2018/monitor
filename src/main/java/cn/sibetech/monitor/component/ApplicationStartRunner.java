@@ -2,7 +2,7 @@ package cn.sibetech.monitor.component;
 
 import cn.sibetech.monitor.config.ScheduledConfig;
 import cn.sibetech.monitor.entity.TaskEntity;
-import cn.sibetech.monitor.service.ScheduledTaskService;
+import cn.sibetech.monitor.service.TaskEntityService;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
@@ -23,7 +23,7 @@ public class ApplicationStartRunner implements ApplicationRunner {
     private ScheduledConfig scheduleConfig;
 
     @Resource
-    private ScheduledTaskService baseService;
+    private TaskEntityService baseService;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {

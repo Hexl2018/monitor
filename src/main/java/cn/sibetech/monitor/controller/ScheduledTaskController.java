@@ -2,7 +2,7 @@ package cn.sibetech.monitor.controller;
 
 import cn.sibetech.monitor.config.ScheduledConfig;
 import cn.sibetech.monitor.entity.TaskEntity;
-import cn.sibetech.monitor.service.ScheduledTaskService;
+import cn.sibetech.monitor.service.TaskEntityService;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +23,7 @@ public class ScheduledTaskController extends BaseController{
     private ScheduledConfig scheduledConfig;
 
     @Resource
-    private ScheduledTaskService baseService;
+    private TaskEntityService baseService;
 
     @RequestMapping("/tasks")
     public Map findTasks() {

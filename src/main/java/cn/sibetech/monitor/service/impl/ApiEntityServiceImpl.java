@@ -7,7 +7,7 @@ import cn.sibetech.monitor.exception.ApiErrorException;
 import cn.sibetech.monitor.exception.WebException;
 import cn.sibetech.monitor.mapper.ApiEntityMapper;
 import cn.sibetech.monitor.service.ApiEntityService;
-import cn.sibetech.monitor.service.ScheduledTaskService;
+import cn.sibetech.monitor.service.TaskEntityService;
 import cn.sibetech.monitor.util.CodeConstant;
 import cn.sibetech.monitor.util.JsonUtils;
 import cn.sibetech.monitor.util.OkHttpUtil;
@@ -30,7 +30,7 @@ import java.util.Map;
 public class ApiEntityServiceImpl extends ServiceImpl<ApiEntityMapper, ApiEntity> implements ApiEntityService {
 
     @Resource
-    private ScheduledTaskService scheduledTaskService;
+    private TaskEntityService taskEntityService;
 
     @Override
     public String testApi(ApiEntity apiEntity){
@@ -63,13 +63,16 @@ public class ApiEntityServiceImpl extends ServiceImpl<ApiEntityMapper, ApiEntity
         baseMapper.insert(apiEntity);
         // 添加定时任务
         TaskEntity taskEntity = makeTaskEntity(apiEntity);
-        scheduledTaskService.addScheduledTask(taskEntity);
+        taskEntityService.getBaseMapper().insert(taskEntity);
     }
 
     @Override
     public void edit(ApiEntity apiEntity) {
         validateApi(apiEntity);
         baseMapper.updateById(apiEntity);
+        // 更新定时任务
+        TaskEntity taskEntity = makeTaskEntity(apiEntity);
+        taskEntityService.edit(taskEntity);
     }
 
     @Override
@@ -107,7 +110,7 @@ public class ApiEntityServiceImpl extends ServiceImpl<ApiEntityMapper, ApiEntity
         }
         // 间隔 (s)
         String cron = ScheduledCronUtil.makeCronPerSeconds(apiEntity.getTimeInterval());
-        return new TaskEntity(apiEntity.getId(),cron,CodeConstant.SCHEDULED_TASK_STOP_STATUS,jobClass);
+        return new TaskEntity(apiEntity.getId(),cron,apiEntity.getStatus(),jobClass);
     }
 
     private void validateApi(ApiEntity apiEntity) {

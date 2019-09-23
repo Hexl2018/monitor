@@ -1,6 +1,10 @@
 package cn.sibetech.monitor.job;
 
+import cn.sibetech.monitor.entity.Record;
+import cn.sibetech.monitor.service.RecordService;
+import cn.sibetech.monitor.util.ApplicationContextUtil;
 import cn.sibetech.monitor.util.OkHttpUtil;
+import org.apache.commons.lang3.time.StopWatch;
 
 import java.util.Map;
 
@@ -10,6 +14,8 @@ import java.util.Map;
  * @date 2019/9/23
  */
 public class HttpGetJob implements Runnable{
+
+    private String taskId;
     /** 请求地址 */
     private String url;
     /** contentType */
@@ -61,7 +67,16 @@ public class HttpGetJob implements Runnable{
         this.raw = raw;
     }
 
-    public HttpGetJob(String url,String contentType, Map<String, String> headers, Map<String, String> params, String raw) {
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
+
+    public HttpGetJob(String taskId,String url, String contentType, Map<String, String> headers, Map<String, String> params, String raw) {
+        this.taskId = taskId;
         this.url = url;
         this.contentType = contentType;
         this.headers = headers;
@@ -74,6 +89,24 @@ public class HttpGetJob implements Runnable{
 
     @Override
     public void run() {
-        OkHttpUtil.httpGet(url,headers,params);
+        String errorCode = "0";
+        String errorMessage = "";
+        StopWatch clock = new StopWatch();
+        try{
+            OkHttpUtil.httpGet(url,headers,params);
+        }catch (Exception e) {
+            errorCode = "-1";
+            errorMessage = e.getMessage();
+        }
+        clock.stop();
+        long time = clock.getTime();
+        // 保存记录
+        saveRecord(taskId,time,errorCode,errorMessage);
+    }
+
+    private void saveRecord(String taskId, long time, String errorCode, String errorMessage) {
+        Record record = new Record(taskId,time,errorCode,errorMessage);
+        RecordService recordService = (RecordService) ApplicationContextUtil.getBean("recordService");
+        recordService.getBaseMapper().insert(record);
     }
 }

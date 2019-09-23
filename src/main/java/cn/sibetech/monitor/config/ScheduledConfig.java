@@ -39,11 +39,6 @@ public class ScheduledConfig {
 
     public void initTask(List<TaskEntity> tasks) {
         try {
-            // 停掉旧的定时任务
-            for (TaskEntity taskEntity : tasks) {
-                stopTask(taskEntity.getId());
-            }
-            // 启动定时任务
             for (TaskEntity taskEntity : tasks) {
                 startNewTask(taskEntity);
             }
@@ -56,13 +51,15 @@ public class ScheduledConfig {
         if (CodeConstant.SCHEDULED_TASK_STOP_STATUS.equals(taskEntity.getStatus())) {
             return;
         }
+        stopTask(taskEntity.getId());
         Class<?> clazz = Class.forName(taskEntity.getJobClass());
         if (clazz==null) {
             logger.error("任务初始化失败，未找到对应class["+taskEntity.getJobClass()+"]");
             return;
         }
-        Constructor<?> constructor = clazz.getConstructor(String.class, String.class, Map.class, Map.class, String.class);
-        Object task = constructor.newInstance(taskEntity.getUrl()
+        Constructor<?> constructor = clazz.getConstructor(String.class,String.class, String.class, Map.class, Map.class, String.class);
+        Object task = constructor.newInstance(taskEntity.getId()
+                , taskEntity.getUrl()
                 , taskEntity.getContentType()
                 , JsonUtils.makeParamsMap(taskEntity.getHeaders())
                 , JsonUtils.makeParamsMap(taskEntity.getParams())
@@ -82,10 +79,5 @@ public class ScheduledConfig {
         scheduledFuture.cancel(true);
         scheduleMap.remove(scheduleKey);
         logger.info("任务[" + scheduleKey + "]停止了");
-    }
-
-    public void updateTask(TaskEntity taskEntity) {
-        stopTask(taskEntity.getId());
-        scheduleMap.remove(taskEntity.getId());
     }
 }
