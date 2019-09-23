@@ -23,9 +23,9 @@ import java.util.concurrent.ScheduledFuture;
  * @date 2019/9/17
  */
 @Configuration
-public class ScheduleConfig {
+public class ScheduledConfig {
 
-    private static final Logger logger = LoggerFactory.getLogger(ScheduleConfig.class);
+    private static final Logger logger = LoggerFactory.getLogger(ScheduledConfig.class);
 
     @Resource
     private ThreadPoolTaskScheduler threadPoolTaskScheduler;
@@ -52,7 +52,7 @@ public class ScheduleConfig {
         }
     }
 
-    private void startNewTask(TaskEntity taskEntity) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void startNewTask(TaskEntity taskEntity) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         if (CodeConstant.SCHEDULED_TASK_STOP_STATUS.equals(taskEntity.getStatus())) {
             return;
         }

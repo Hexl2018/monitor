@@ -1,6 +1,6 @@
 package cn.sibetech.monitor.controller;
 
-import cn.sibetech.monitor.config.ScheduleConfig;
+import cn.sibetech.monitor.config.ScheduledConfig;
 import cn.sibetech.monitor.entity.TaskEntity;
 import cn.sibetech.monitor.service.ScheduledTaskService;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +20,7 @@ import java.util.Map;
 public class ScheduledTaskController extends BaseController{
 
     @Resource
-    private ScheduleConfig scheduleConfig;
+    private ScheduledConfig scheduledConfig;
 
     @Resource
     private ScheduledTaskService baseService;
@@ -38,7 +38,7 @@ public class ScheduledTaskController extends BaseController{
     public Map startTask() {
         try{
             List<TaskEntity> tasks = baseService.findList();
-            scheduleConfig.initTask(tasks);
+            scheduledConfig.initTask(tasks);
             return successMsg("任务初始化成功啦！");
         }catch (Exception e) {
             return error(-1,e.getMessage());
@@ -48,7 +48,7 @@ public class ScheduledTaskController extends BaseController{
     @RequestMapping("/stop_task/{id}")
     public Map stopTask(@PathVariable String id) {
         try{
-            scheduleConfig.stopTask(id);
+            scheduledConfig.stopTask(id);
             return successMsg("任务停止啦！");
         }catch (Exception e) {
             return error(-1,e.getMessage());

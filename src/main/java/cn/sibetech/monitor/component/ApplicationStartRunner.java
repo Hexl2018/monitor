@@ -1,6 +1,6 @@
 package cn.sibetech.monitor.component;
 
-import cn.sibetech.monitor.config.ScheduleConfig;
+import cn.sibetech.monitor.config.ScheduledConfig;
 import cn.sibetech.monitor.entity.TaskEntity;
 import cn.sibetech.monitor.service.ScheduledTaskService;
 import org.springframework.boot.ApplicationArguments;
@@ -20,14 +20,14 @@ import java.util.List;
 public class ApplicationStartRunner implements ApplicationRunner {
 
     @Resource
-    private ScheduleConfig scheduleConfig;
+    private ScheduledConfig scheduleConfig;
 
     @Resource
     private ScheduledTaskService baseService;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        /*List<TaskEntity> tasks = baseService.findList();
-        scheduleConfig.initTask(tasks);*/
+        List<TaskEntity> tasks = baseService.findList();
+        scheduleConfig.initTask(tasks);
     }
 }

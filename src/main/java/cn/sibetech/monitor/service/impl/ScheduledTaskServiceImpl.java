@@ -1,5 +1,6 @@
 package cn.sibetech.monitor.service.impl;
 
+import cn.sibetech.monitor.config.ScheduledConfig;
 import cn.sibetech.monitor.entity.ApiEntity;
 import cn.sibetech.monitor.entity.TaskEntity;
 import cn.sibetech.monitor.mapper.ScheduledTaskMapper;
@@ -10,6 +11,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.scheduling.config.ScheduledTask;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -18,6 +20,10 @@ import java.util.List;
  */
 @Service
 public class ScheduledTaskServiceImpl extends ServiceImpl<ScheduledTaskMapper, TaskEntity> implements ScheduledTaskService {
+
+    @Resource
+    private ScheduledConfig scheduledConfig;
+
     @Override
     public List<TaskEntity> findList() {
         Wrapper<TaskEntity> wrapper = new QueryWrapper<>();
@@ -25,23 +31,12 @@ public class ScheduledTaskServiceImpl extends ServiceImpl<ScheduledTaskMapper, T
     }
 
     @Override
-    public void addScheduledTask(ApiEntity apiEntity) {
-        TaskEntity taskEntity = new TaskEntity();
+    public void startScheduledTask(TaskEntity taskEntity) {
 
     }
 
     @Override
-    public void stopScheduledTask(ApiEntity apiEntity) {
-
-    }
-
-    @Override
-    public void removeScheduledTask(ApiEntity apiEntity) {
-
-    }
-
-    @Override
-    public void updateScheduledTask(ApiEntity apiEntity) {
+    public void stopScheduledTask(TaskEntity taskEntity) {
 
     }
 }

@@ -45,4 +45,16 @@ public class CodeConstant {
      * api 监控关闭状态
      */
     public static final String API_MONITOR_CLOSE_STATUS = "1";
+    /**
+     * HTTP_GET_JOB_CLASS
+     */
+    public static final String HTTP_GET_JOB_CLASS = "cn.sibetech.monitor.job.HttpGetJob";
+    /**
+     * HTTP_POST_FORM_JOB_CLASS
+     */
+    public static final String HTTP_POST_FORM_JOB_CLASS = "cn.sibetech.monitor.job.HttpPostFormJob";
+    /**
+     * HTTP_POST_RAW_JOB_CLASS
+     */
+    public static final String HTTP_POST_RAW_JOB_CLASS = "cn.sibetech.monitor.job.HttpPostRawJob";
 }

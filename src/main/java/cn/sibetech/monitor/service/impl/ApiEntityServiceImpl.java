@@ -1,6 +1,7 @@
 package cn.sibetech.monitor.service.impl;
 
 import cn.sibetech.monitor.entity.ApiEntity;
+import cn.sibetech.monitor.entity.TaskEntity;
 import cn.sibetech.monitor.enums.ApiErrorCode;
 import cn.sibetech.monitor.exception.ApiErrorException;
 import cn.sibetech.monitor.exception.WebException;
@@ -10,6 +11,7 @@ import cn.sibetech.monitor.service.ScheduledTaskService;
 import cn.sibetech.monitor.util.CodeConstant;
 import cn.sibetech.monitor.util.JsonUtils;
 import cn.sibetech.monitor.util.OkHttpUtil;
+import cn.sibetech.monitor.util.ScheduledCronUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -60,7 +62,8 @@ public class ApiEntityServiceImpl extends ServiceImpl<ApiEntityMapper, ApiEntity
         validateApi(apiEntity);
         baseMapper.insert(apiEntity);
         // 添加定时任务
-        scheduledTaskService.addScheduledTask(apiEntity);
+        TaskEntity taskEntity = makeTaskEntity(apiEntity);
+        scheduledTaskService.addScheduledTask(taskEntity);
     }
 
     @Override
@@ -87,10 +90,24 @@ public class ApiEntityServiceImpl extends ServiceImpl<ApiEntityMapper, ApiEntity
         baseMapper.updateById(apiEntity);
         // 根据status添加或新增定时任务
         if (CodeConstant.API_MONITOR_OPEN_STATUS.equals(status)) {
-            scheduledTaskService.addScheduledTask(apiEntity);
+
         }else if (CodeConstant.API_MONITOR_CLOSE_STATUS.equals(status)) {
-            scheduledTaskService.stopScheduledTask(apiEntity);
+
         }
+    }
+
+    private TaskEntity makeTaskEntity(ApiEntity apiEntity) {
+        String jobClass;
+        if (CodeConstant.REQUEST_TYPE_GET.equals(apiEntity.getRequestType())) {
+            jobClass = CodeConstant.HTTP_GET_JOB_CLASS;
+        }else if (CodeConstant.CONTENT_TYPE_FORM_URLENCODED.equals(apiEntity.getContentType())&&CodeConstant.REQUEST_TYPE_POST.equals(apiEntity.getRequestType())) {
+            jobClass = CodeConstant.HTTP_POST_FORM_JOB_CLASS;
+        }else {
+            jobClass = CodeConstant.HTTP_POST_RAW_JOB_CLASS;
+        }
+        // 间隔 (s)
+        String cron = ScheduledCronUtil.makeCronPerSeconds(apiEntity.getTimeInterval());
+        return new TaskEntity(apiEntity.getId(),cron,CodeConstant.SCHEDULED_TASK_STOP_STATUS,jobClass);
     }
 
     private void validateApi(ApiEntity apiEntity) {

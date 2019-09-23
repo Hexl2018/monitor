@@ -14,6 +14,9 @@ import java.io.Serializable;
 @TableName("scheduled_task")
 public class TaskEntity implements Serializable {
 
+    /**
+     * 为方便任务调度，此处id 与 api id 保持一致
+     */
     @TableId(value = "id", type = IdType.UUID)
     private String id;
     /**
@@ -22,21 +25,10 @@ public class TaskEntity implements Serializable {
     @TableField("cron")
     private String cron;
     /**
-     * 任务类型
-     */
-    @TableField("type")
-    private int type;
-    /**
      * 启动状态
      */
     @TableField("status")
     private String status;
-
-    /**
-     * apiEntity id
-     */
-    @TableField("api_id")
-    private String apiId;
 
     /**
      * 任务类
@@ -45,28 +37,10 @@ public class TaskEntity implements Serializable {
     private String jobClass;
 
     /**
-     * 任务类型
-     */
-    @TableField(exist = false)
-    private Integer taskType;
-
-    /**
-     * raw
-     */
-    @TableField(exist = false)
-    private String raw;
-
-    /**
      * url
      */
     @TableField(exist = false)
     private String url;
-
-    /**
-     * 参数
-     */
-    @TableField(exist = false)
-    private String params;
 
     /**
      * contentType
@@ -80,20 +54,24 @@ public class TaskEntity implements Serializable {
     @TableField(exist = false)
     private String headers;
 
+    /**
+     * 参数
+     */
+    @TableField(exist = false)
+    private String params;
+
+    /**
+     * raw
+     */
+    @TableField(exist = false)
+    private String raw;
+
     public String getStatus() {
         return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 
     public String getId() {
@@ -110,22 +88,6 @@ public class TaskEntity implements Serializable {
 
     public void setCron(String cron) {
         this.cron = cron;
-    }
-
-    public String getApiId() {
-        return apiId;
-    }
-
-    public void setApiId(String apiId) {
-        this.apiId = apiId;
-    }
-
-    public Integer getTaskType() {
-        return taskType;
-    }
-
-    public void setTaskType(Integer taskType) {
-        this.taskType = taskType;
     }
 
     public String getRaw() {
@@ -174,5 +136,27 @@ public class TaskEntity implements Serializable {
 
     public void setJobClass(String jobClass) {
         this.jobClass = jobClass;
+    }
+
+    public TaskEntity() {
+    }
+
+    public TaskEntity(String id, String cron, String status, String jobClass) {
+        this.id = id;
+        this.cron = cron;
+        this.status = status;
+        this.jobClass = jobClass;
+    }
+
+    public TaskEntity(String id, String cron, String status, String jobClass, String url, String contentType, String headers, String params, String raw) {
+        this.id = id;
+        this.cron = cron;
+        this.status = status;
+        this.jobClass = jobClass;
+        this.url = url;
+        this.contentType = contentType;
+        this.headers = headers;
+        this.params = params;
+        this.raw = raw;
     }
 }

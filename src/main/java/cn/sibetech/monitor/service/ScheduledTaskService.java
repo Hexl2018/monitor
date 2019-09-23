@@ -19,27 +19,14 @@ public interface ScheduledTaskService extends IService<TaskEntity> {
     List<TaskEntity> findList();
 
     /**
-     * 添加定时任务
-     * @param apiEntity apiEntity
+     * 开启定时任务
+     * @param taskEntity taskEntity
      */
-    void addScheduledTask(ApiEntity apiEntity);
+    void startScheduledTask(TaskEntity taskEntity);
 
     /**
      * 停止定时任务
-     * @param apiEntity apiEntity
+     * @param taskEntity taskEntity
      */
-    void stopScheduledTask(ApiEntity apiEntity);
-
-    /**
-     * 移除定时任务
-     * @param apiEntity apiEntity
-     */
-    void removeScheduledTask(ApiEntity apiEntity);
-
-
-    /**
-     * 更新定时任务
-     * @param apiEntity apiEntity
-     */
-    void updateScheduledTask(ApiEntity apiEntity);
+    void stopScheduledTask(TaskEntity taskEntity);
 }
