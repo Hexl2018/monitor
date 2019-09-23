@@ -1,0 +1,76 @@
+<#assign ctx=rc.contextPath/>
+<@p.html>
+<div id="vueApp" v-cloak>
+    <el-container>
+        <el-header>
+            <#include "../header.html"/>
+        </el-header>
+        <el-main>
+            <el-container style="height:calc(100vh - 100px)">
+                <el-header style="padding-top: 20px;">
+                    统计页面
+                </el-header>
+                <el-main>
+
+                </el-main>
+            </el-container>
+        </el-main>
+    </el-container>
+</div>
+</@p.html>
+<script type="text/javascript">
+    var vm = new Vue({
+        el: '#vueApp',
+        data() {
+            return {
+                msg: "Welcome to Your FirstPage",
+                tableHeight: 500,
+                currentPage4: 1,
+                activeIndex: "2",
+                tableData: [
+                    {
+                        date: "2016-05-02",
+                        name: "oa待办接口",
+                        status: "1"
+                    },
+                    {
+                        date: "2016-05-04",
+                        name: "一卡通待办接口",
+                        status: "0"
+                    },
+                    {
+                        date: "2016-05-01",
+                        name: "一张表待办接口",
+                        status: "1"
+                    },
+                    {
+                        date: "2016-05-03",
+                        name: "流程平台待办接口",
+                        status: "1"
+                    }
+                ],
+                input: ""
+            }
+        },
+        methods: {
+            handleSizeChange() {
+
+            },
+            handleCurrentChange() {
+
+            },
+            handleSelect(index) {
+                handleMenu(this.activeIndex, index);
+            },
+            getUser() {
+
+            },
+            addApi() {
+                window.location.href = "#/add_api";
+            }
+        },
+        mounted() {
+
+        }
+    });
+</script>

@@ -1,0 +1,273 @@
+<#assign ctx=rc.contextPath/>
+<@p.html>
+<div id="vueApp" v-cloak>
+    <el-container>
+        <el-header>
+            <#include "../header.html"/>
+        </el-header>
+        <el-main>
+            <el-container style="height:calc(100vh - 100px);">
+                <el-header>
+                    <el-row>
+                        <el-button-group style="float:right;">
+                            <el-button type="primary" @click="goBack" icon="el-icon-back">返回</el-button>
+                            <el-button type="primary" :disabled="submitFlag" @click="testApi" icon="el-icon-sort">接口测试
+                            </el-button>
+                            <el-button type="primary" :disabled="submitFlag" @click="save" icon="el-icon-check">保存
+                            </el-button>
+                        </el-button-group>
+                    </el-row>
+                </el-header>
+                <el-main>
+                    <el-row v-loading="submitFlag">
+                        <div style="height: calc(100vh - 200px);">
+                            <el-scrollbar style="height: 100%">
+                                <el-col :span="23">
+                                    <el-form ref="form" :model="form" :rules="rules" label-position="top">
+                                        <el-form-item label="接口名称：" prop="name">
+                                            <el-input v-model="form.name"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="请求方式：">
+                                            <el-radio-group v-model="form.requestType" @change="handleRequestType">
+                                                <el-radio label="get" border>get</el-radio>
+                                                <el-radio label="post" border>post</el-radio>
+                                            </el-radio-group>
+                                        </el-form-item>
+                                        <el-form-item label="接口地址：" prop="url">
+                                            <el-input v-model="form.url"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="请求头（无需填写Content-Type）：">
+                                            <el-row v-for="(item,index) in headers" :key="index" class="inline-row">
+                                                <el-col :span="11">
+                                                    <span class="inline-row-label">key：</span>
+                                                    <el-input v-model="item.key"></el-input>
+                                                </el-col>
+                                                <el-col :span="11">
+                                                    <span class="inline-row-label">value：</span>
+                                                    <el-input v-model="item.value"></el-input>
+                                                </el-col>
+                                                <el-col :span="2">
+                                                    <el-button type="text" size="small" @click="removeHeader(index)">
+                                                        移除
+                                                    </el-button>
+                                                </el-col>
+                                            </el-row>
+                                            <el-row v-if="headers.length>0" style="height:20px;"></el-row>
+                                            <el-button icon="el-icon-plus" @click="addHeader">添加请求头</el-button>
+                                        </el-form-item>
+                                        <el-form-item label="Content-Type：" v-if="form.requestType=='post'"
+                                                      @change="handleContentType">
+                                            <el-radio v-model="form.contentType"
+                                                      label="application/x-www-form-urlencoded" border>
+                                                application/x-www-form-urlencoded
+                                            </el-radio>
+                                            <el-radio v-model="form.contentType" label="application/json" border>
+                                                application/json
+                                            </el-radio>
+                                            <el-radio v-model="form.contentType" label="text/xml" border>text/xml
+                                            </el-radio>
+                                            <el-radio v-model="form.contentType" label="text/plain" border>text/plain
+                                            </el-radio>
+                                        </el-form-item>
+                                        <el-form-item label="请求参数："
+                                                      v-if="form.requestType=='post'&&form.contentType=='application/x-www-form-urlencoded'">
+                                            <el-row v-for="(item,index) in params" :key="index" class="inline-row">
+                                                <el-col :span="11">
+                                                    <span class="inline-row-label">key：</span>
+                                                    <el-input v-model="item.key"></el-input>
+                                                </el-col>
+                                                <el-col :span="11">
+                                                    <span class="inline-row-label">value：</span>
+                                                    <el-input v-model="item.value"></el-input>
+                                                </el-col>
+                                                <el-col :span="2">
+                                                    <el-button type="text" size="small" @click="removeParam(index)">移除
+                                                    </el-button>
+                                                </el-col>
+                                            </el-row>
+                                            <el-row v-if="params.length>0" style="height:20px;"></el-row>
+                                            <el-button icon="el-icon-plus" @click="addParams">添加请求参数</el-button>
+                                        </el-form-item>
+                                        <el-form-item label="raw："
+                                                      v-if="form.requestType=='post'&&form.contentType!='application/x-www-form-urlencoded'">
+                                            <el-input type="textarea" rows="4" v-model="form.raw"></el-input>
+                                        </el-form-item>
+                                        <el-form-item label="请求间隔（min）：">
+                                            <el-input-number v-model="form.timeInterval" controls-position="right"
+                                                             :min="1"></el-input-number>
+                                        </el-form-item>
+                                    </el-form>
+                                </el-col>
+                            </el-scrollbar>
+                        </div>
+                    </el-row>
+                </el-main>
+                <!-- 弹框详情 -->
+                <el-dialog title="返回详情" :visible.sync="dialogTableVisible" top="5vh">
+                    <!-- json展示插件-->
+                    <el-row>
+                        <el-button-group style="float: right">
+                        <el-button type="primary" @click="toggleJSon1" :icon="(countLevel1)%2===0?'el-icon-arrow-down':'el-icon-arrow-up'">{{(countLevel1)%2===0?'展开':'收起'}}第一层</el-button>
+                        <el-button type="primary" @click="toggleJSon2" :icon="(countLevel2)%2===0?'el-icon-arrow-down':'el-icon-arrow-up'">{{(countLevel2)%2===0?'展开':'收起'}}第二层</el-button>
+                        </el-button-group>
+                    </el-row>
+                    <el-row style="height: calc(100vh - 300px);">
+                        <el-scrollbar style="height: 100%">
+                            <div id="json" v-loading="jsonLoading"></div>
+                        </el-scrollbar>
+                    </el-row>
+                </el-dialog>
+            </el-container>
+        </el-main>
+    </el-container>
+</div>
+</@p.html>
+<style type="text/css">
+    .inline-row {
+        padding-bottom: 10px;
+        padding-top: 10px;
+        border-bottom: 1px solid #eff2f6;
+        flex: 1;
+    }
+
+    .inline-row .el-input {
+        width: 300px;
+    }
+
+    .inline-row-label {
+        display: inline-block;
+        text-align: right;
+        width: 100px;
+    }
+</style>
+<script type="text/javascript">
+    var vm = new Vue({
+        el: '#vueApp',
+        data() {
+            return {
+                tableHeight: 500,
+                activeIndex: "1",
+                submitFlag: false,
+                dialogTableVisible: false,
+                jsonLoading: false,
+                returnData: '',
+                countLevel1: 1,
+                countLevel2: 1,
+                form: {
+                    name: "",
+                    url: "",
+                    timeInterval: 5,
+                    requestType: "post",
+                    contentType: "application/x-www-form-urlencoded",
+                    raw: '',
+                    headers: '',
+                    params: ''
+                },
+                rules: {
+                    name: [
+                        {required: true, message: '请输入', trigger: 'blur'},
+                    ],
+                    url: [
+                        {required: true, message: '请输入', trigger: 'blur'},
+                    ]
+                },
+                params: [],
+                headers: []
+            }
+        },
+        methods: {
+            save() {
+                this.$refs["form"].validate((valid) => {
+                    if (valid) {
+                        this.submitFlag = true;
+                        this.beforeSubmit();
+                        $.post("${ctx}/api_manage/add", this.form, function (dataResult) {
+                            vm.submitFlag = false;
+                            if (dataResult.errCode === 0) {
+                                vm.$message.success(dataResult.errMsg);
+                                window.location.href="${ctx}/api_manage/index";
+                            } else {
+                                vm.$message.error(dataResult.errMsg);
+                            }
+                        });
+                    }
+                });
+            },
+            addHeader() {
+                this.headers.push({key: "", value: ""});
+            },
+            addParams() {
+                this.params.push({key: "", value: ""});
+            },
+            handleSelect(index) {
+                handleMenu(this.activeIndex, index);
+            },
+            handleRequestType(val) {
+                if (val === 'get') {
+                    this.form.contentType = '';
+                } else {
+                    this.form.contentType = 'application/x-www-form-urlencoded';
+                }
+                this.form.raw = ''
+            },
+            handleContentType(val) {
+                if (val === 'application/x-www-form-urlencoded') {
+                    this.form.raw = ''
+                }
+            },
+            removeParam(index) {
+                this.params.splice(index, 1);
+            },
+            removeHeader(index) {
+                this.headers.splice(index, 1);
+            },
+            beforeSubmit() {
+                if (this.params.length > 0) {
+                    this.form.params = JSON.stringify(this.params);
+                }
+                if (this.headers.length > 0) {
+                    this.form.headers = JSON.stringify(this.headers);
+                }
+            },
+            toggleJSon1() {
+                this.countLevel1++;
+                $('#json').JSONView('toggle', 1);
+            },
+            toggleJSon2() {
+                this.countLevel2++;
+                $('#json').JSONView('toggle', 2);
+            },
+            testApi() {
+                this.$refs["form"].validate((valid) => {
+                    if (valid) {
+                        this.submitFlag = true;
+                        this.beforeSubmit();
+                        $.post("${ctx}/api_manage/test_api", this.form, function (dataResult) {
+                            vm.submitFlag = false;
+                            if (dataResult.errCode === 0) {
+                                let dom = JSON.parse(dataResult.data);
+                                vm.returnData = dom === "" ? dataResult.data : dom;
+                                vm.dialogTableVisible = true;
+                                setTimeout(() => {
+                                    vm.jsonLoading = true;
+                                    $("#json").JSONView(vm.returnData);
+                                    vm.$nextTick(() => {
+                                        vm.jsonLoading = false;
+                                    })
+                                }, 100);
+                            } else {
+                                vm.$message.error(dataResult.errMsg);
+                            }
+                        });
+                    }
+                });
+            },
+            goBack() {
+                window.history.back();
+            }
+        },
+        mounted() {
+            $("#json").JSONView({});
+        }
+    });
+</script>
